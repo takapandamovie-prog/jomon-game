@@ -27,14 +27,11 @@ body{background:#2a1a08;display:flex;flex-direction:column;align-items:center;ju
 .isl{width:32px;height:32px;background:#1e0e04;border:1px solid #4a2e10;display:flex;align-items:center;justify-content:center;font-size:9px;position:relative;cursor:pointer;image-rendering:auto;}
 .isl:hover{border-color:#e8a020;}.isl .ic{position:absolute;bottom:1px;right:2px;font-size:7px;}
 #ctrl{background:#120a02;border:2px solid #4a2e10;border-top:none;padding:2px 10px;font-size:8px;color:#3a2a1a;text-align:center;}
-#dpad{display:none;background:#120a02;border:2px solid #4a2e10;border-top:none;padding:8px 10px;user-select:none;-webkit-user-select:none;}
-.dp-row{display:flex;justify-content:center;align-items:center;gap:4px;}
-.dp-btn{width:52px;height:52px;background:#2a1a08;border:2px solid #7a5520;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:22px;color:#c09050;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.dp-btn:active,.dp-btn.pressed{background:#5a3010;border-color:#e8a020;color:#fff;}
-.dp-space{width:52px;height:52px;}
-.dp-right-btns{display:flex;flex-direction:column;gap:6px;margin-left:16px;}
-.dp-act{width:56px;height:42px;background:#2a1a08;border:2px solid #7a5520;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#c09050;cursor:pointer;-webkit-tap-highlight-color:transparent;letter-spacing:1px;}
+#dpad{display:none;background:#120a02;border:2px solid #4a2e10;border-top:none;padding:6px 10px;user-select:none;-webkit-user-select:none;}
+.dp-right-btns{display:flex;flex-direction:column;gap:8px;margin-left:12px;}
+.dp-act{width:64px;height:48px;background:#2a1a08;border:2px solid #7a5520;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#c09050;cursor:pointer;-webkit-tap-highlight-color:transparent;letter-spacing:1px;}
 .dp-act:active,.dp-act.pressed{background:#5a3010;border-color:#e8a020;color:#fff;}
+#joystick-canvas{touch-action:none;cursor:pointer;}
 @media(pointer:coarse){#dpad{display:block;}#ctrl{display:none;}}
 #cook{background:#120a02;border:2px solid #4a2e10;padding:12px;display:none;}
 #cook h2{font-size:13px;color:#e8a020;text-align:center;margin-bottom:10px;letter-spacing:3px;}
@@ -81,7 +78,7 @@ body{background:#2a1a08;display:flex;flex-direction:column;align-items:center;ju
 <div id="title" class="hidden">
   <h1>🏺 縄文サバイバル</h1>
   <p class="sub">― JOMON SURVIVAL ―</p>
-  <canvas id="title-cv" width="440" height="120"></canvas>
+  <img id="title-cv" src="title.png" style="max-width:100%;height:auto;border:2px solid #7a5520;display:block;margin:0 auto 14px;">
   <p class="hint">矢印キー/WASD：移動　Z：槍を振る<br>家の前でEnter：料理　どこでもEnter：生で食べる（HP減）<br>1分=1日　夜は眠る　食料は日に日に減る…</p>
   <button class="btn" onclick="startGame()">▶ はじめる</button>
 </div>
@@ -98,15 +95,12 @@ body{background:#2a1a08;display:flex;flex-direction:column;align-items:center;ju
   <div id="inv-bar"><div id="inv-ttl">🎒 インベントリ</div><div id="inv-slots"></div></div>
   <div id="ctrl">↑↓←→/WASD：移動　Z：槍を振る　Enter：食べる（家の前では料理）</div>
   <div id="dpad">
-    <div style="display:flex;justify-content:center;align-items:center;gap:20px;">
-      <div>
-        <div class="dp-row"><div class="dp-space"></div><div class="dp-btn" id="dp-up">▲</div><div class="dp-space"></div></div>
-        <div class="dp-row"><div class="dp-btn" id="dp-left">◀</div><div class="dp-space"></div><div class="dp-btn" id="dp-right">▶</div></div>
-        <div class="dp-row"><div class="dp-space"></div><div class="dp-btn" id="dp-down">▼</div><div class="dp-space"></div></div>
-      </div>
+    <div style="display:flex;justify-content:center;align-items:center;">
+      <canvas id="joystick-canvas" width="130" height="130"></canvas>
       <div class="dp-right-btns">
         <div class="dp-act" id="dp-axe">🗡 槍</div>
-        <div class="dp-act" id="dp-enter">🍖 食/料理</div>
+        <div class="dp-act" id="dp-enter">食</div>
+        <div class="dp-act" id="dp-pause" style="font-size:14px;">⏸</div>
       </div>
     </div>
   </div>
@@ -189,6 +183,8 @@ const ADEF={
   mammoth:   {hp:8,spd:1.2,roam:0.4,flee:false,dmg:20,range:9,drops:['meat','meat','meat','meat','meat','meat','meat','meat'],label:'マンモス',e:'🦣'},
   sabertiger:{hp:3,spd:3.2,roam:1.0,flee:false,dmg:15,range:7,drops:['meat','meat','meat'],label:'サーベルタイガー',e:'🐅'},
   jomon:     {hp:3,spd:2.2,roam:0.6,flee:false,dmg:10,range:6,drops:['acorn','herb','berry'],label:'縄文人',e:'👤'},
+  bear:      {hp:5,spd:2.0,roam:0.8,flee:false,dmg:18,range:7,drops:['meat','meat','meat','meat'],label:'ヒグマ',e:'🐻'},
+  lion:      {hp:7,spd:2.8,roam:1.0,flee:false,dmg:25,range:8,drops:['meat','meat','meat','meat','meat'],label:'洞窟ライオン',e:'🦁'},
 };
 const TILE=32,MC=420,MR=320,VW=480,VH=320;
 let camX=0,camY=0,mapD=[],items=[],animals=[];
@@ -280,7 +276,7 @@ function spawnItems(){
   const WATER=[4,9];
   const isNearWater=(x,y)=>WATER.includes(mapD[y]?.[x])||[[0,1],[1,0],[0,-1],[-1,0],[1,1],[-1,-1],[1,-1],[-1,1]].some(([bx,by])=>WATER.includes(mapD[y+by]?.[x+bx]));
   // Day-based scarcity: 140 on day 1, -12% each day
-  const cnt=Math.max(8,Math.floor(140*Math.pow(0.88,G.day-1)));
+  const cnt=Math.max(40,Math.floor(140*Math.pow(0.95,G.day-1)));
   const totalWt=wt.reduce((a,b)=>a+b,0);
   for(let i=0;i<cnt;i++){
     let r=Math.random()*totalWt,type=types[0];
@@ -312,18 +308,29 @@ function spawnItems(){
 
 function spawnAnimals(){
   const list=[];
-  const count=Math.min(60,20+G.day*2);
-  const pool=['deer'];
-  if(G.day>=1)pool.push('monkey');
-  if(G.day>=2)pool.push('boar');
-  if(G.day>=3)pool.push('jomon');
-  if(G.day>=5)pool.push('sabertiger');
-  if(G.day>=7)pool.push('mammoth');
+  const count=Math.max(20,Math.round((50-G.day*1.5)*1.2));
+  // [type, minDay, earlyWeight, lateWeight]
+  // 序盤は弱い動物多め、日数が経つほど強い動物の割合が増える
+  const POOL=[
+    ['deer',      0,  10, 1],
+    ['monkey',    1,   8, 1],
+    ['boar',      2,   6, 2],
+    ['jomon',     3,   4, 2],
+    ['sabertiger',5,   1, 5],
+    ['mammoth',   7,   0, 4],
+    ['bear',     10,   0, 5],
+    ['lion',     15,   0, 4],
+  ];
+  const t=Math.min(1,G.day/20); // 0=序盤, 1=20日目以降
+  const avail=POOL.filter(([,min])=>G.day>=min)
+    .map(([type,,ew,lw])=>[type, ew*(1-t)+lw*t]);
+  const totalW=avail.reduce((s,[,w])=>s+w,0);
   for(let i=0;i<count;i++){
     let x,y,tr=0;
     do{x=3+Math.random()*(MC-6)|0;y=3+Math.random()*(MR-6)|0;tr++;}
     while((SOLID.includes(mapD[y]?.[x])||Math.hypot(x-HX,y-HY)<8)&&tr<100);
-    const type=pool[Math.random()*pool.length|0];
+    let r=Math.random()*totalW,type=avail[0][0];
+    for(const [tp,w] of avail){r-=w;if(r<=0){type=tp;break;}}
     const def=ADEF[type];
     list.push({x:x*TILE+TILE/2,y:y*TILE+TILE/2,type,
       vx:(Math.random()-0.5)*def.roam,vy:(Math.random()-0.5)*def.roam,
@@ -587,21 +594,58 @@ function togglePause(){
 }
 document.addEventListener('keyup',e=>{keys[e.key]=false;});
 
+// ── ジョイスティック ──────────────────────────────────────────────────────
+const JS={dx:0,dy:0,active:false};
 (function(){
-  const map={'dp-up':'ArrowUp','dp-down':'ArrowDown','dp-left':'ArrowLeft','dp-right':'ArrowRight'};
-  Object.entries(map).forEach(([id,key])=>{
-    const el=document.getElementById(id);if(!el)return;
-    const press=()=>{keys[key]=true;el.classList.add('pressed');};
-    const release=()=>{keys[key]=false;el.classList.remove('pressed');};
-    el.addEventListener('touchstart',e=>{e.preventDefault();press();},{passive:false});
-    el.addEventListener('touchend',e=>{e.preventDefault();release();},{passive:false});
-    el.addEventListener('touchcancel',release);
-    el.addEventListener('mousedown',press);el.addEventListener('mouseup',release);el.addEventListener('mouseleave',release);
-  });
+  const jc=document.getElementById('joystick-canvas');
+  if(!jc)return;
+  const jctx=jc.getContext('2d');
+  const CX=65,CY=65,OR=52,KR=22; // center, outer radius, knob radius
+  function drawJoy(){
+    jctx.clearRect(0,0,130,130);
+    // 外輪
+    jctx.beginPath();jctx.arc(CX,CY,OR,0,Math.PI*2);
+    jctx.fillStyle='rgba(42,26,8,0.85)';jctx.fill();
+    jctx.strokeStyle='#7a5520';jctx.lineWidth=2;jctx.stroke();
+    // 十字ガイド
+    jctx.strokeStyle='rgba(122,85,32,0.3)';jctx.lineWidth=1;
+    jctx.beginPath();jctx.moveTo(CX-OR,CY);jctx.lineTo(CX+OR,CY);jctx.stroke();
+    jctx.beginPath();jctx.moveTo(CX,CY-OR);jctx.lineTo(CX,CY+OR);jctx.stroke();
+    // ノブ
+    const kx=CX+JS.dx*OR,ky=CY+JS.dy*OR;
+    jctx.beginPath();jctx.arc(kx,ky,KR,0,Math.PI*2);
+    jctx.fillStyle=JS.active?'rgba(232,160,32,0.95)':'rgba(192,144,80,0.8)';jctx.fill();
+    jctx.strokeStyle=JS.active?'#fff':'#e8a020';jctx.lineWidth=2;jctx.stroke();
+  }
+  drawJoy();
+  function onMove(touch){
+    const rect=jc.getBoundingClientRect();
+    const ox=touch.clientX-rect.left-CX;
+    const oy=touch.clientY-rect.top-CY;
+    const dist=Math.hypot(ox,oy);
+    const ang=Math.atan2(oy,ox);
+    const clamped=Math.min(1,dist/OR);
+    JS.dx=Math.cos(ang)*clamped;
+    JS.dy=Math.sin(ang)*clamped;
+    drawJoy();
+  }
+  jc.addEventListener('touchstart',e=>{e.preventDefault();JS.active=true;onMove(e.touches[0]);},{passive:false});
+  jc.addEventListener('touchmove',e=>{e.preventDefault();onMove(e.touches[0]);},{passive:false});
+  jc.addEventListener('touchend',e=>{e.preventDefault();JS.active=false;JS.dx=0;JS.dy=0;drawJoy();},{passive:false});
+  jc.addEventListener('touchcancel',()=>{JS.active=false;JS.dx=0;JS.dy=0;drawJoy();});
+  // マウスでもテスト可能に
+  let md=false;
+  jc.addEventListener('mousedown',e=>{md=true;JS.active=true;onMove(e);});
+  jc.addEventListener('mousemove',e=>{if(md){onMove(e);}});
+  jc.addEventListener('mouseup',()=>{md=false;JS.active=false;JS.dx=0;JS.dy=0;drawJoy();});
+  jc.addEventListener('mouseleave',()=>{if(md){md=false;JS.active=false;JS.dx=0;JS.dy=0;drawJoy();}});
+
   const axeBtn=document.getElementById('dp-axe');
   if(axeBtn){const f=e=>{e.preventDefault();swingAxe();};axeBtn.addEventListener('touchstart',f,{passive:false});axeBtn.addEventListener('mousedown',f);}
   const enterBtn=document.getElementById('dp-enter');
   if(enterBtn){const f=e=>{e.preventDefault();if(G.phase!=='field')return;if(G.nearHome)enterHome();else fieldEat();};enterBtn.addEventListener('touchstart',f,{passive:false});enterBtn.addEventListener('mousedown',f);}
+  const pauseBtn=document.getElementById('dp-pause');
+  if(pauseBtn){const f=e=>{e.preventDefault();togglePause();};pauseBtn.addEventListener('touchstart',f,{passive:false});pauseBtn.addEventListener('mousedown',f);}
 })();
 
 function handleInput(){
@@ -611,6 +655,13 @@ function handleInput(){
   else if(keys.ArrowDown||keys.s||keys.S){dy=2.875;PL.facing='down';}
   if(keys.ArrowLeft||keys.a||keys.A){dx=-2.875;PL.facing='left';}
   else if(keys.ArrowRight||keys.d||keys.D){dx=2.875;PL.facing='right';}
+  // ジョイスティック（デッドゾーン0.15）
+  if(JS.active&&(Math.abs(JS.dx)>0.15||Math.abs(JS.dy)>0.15)){
+    const spd=2.875;
+    dx=JS.dx*spd;dy=JS.dy*spd;
+    if(Math.abs(JS.dx)>Math.abs(JS.dy))PL.facing=JS.dx>0?'right':'left';
+    else PL.facing=JS.dy>0?'down':'up';
+  }
   if(!dx&&!dy)return;
   const nx=PL.x+dx,ny=PL.y+dy;
   if(!SOLID.includes(mapD[Math.floor(ny/TILE)]?.[Math.floor(nx/TILE)]??0)){PL.x=nx;PL.y=ny;}
@@ -675,6 +726,8 @@ function enterHome(){
   cancelAnimationFrame(raf);G.phase='cook';
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('cook').style.display='block';
+  // 万が一スロットに残っていたら返却してからリセット
+  G.cslots.forEach(t=>{if(t)G.inv[t]=(G.inv[t]||0)+1;});
   G.cslots=[null,null,null];
   renderCSlots();renderCInv();renderResult();startFire();
 }
@@ -865,6 +918,9 @@ async function showRanking(){
 }
 function startNight(){
   cancelAnimationFrame(raf);cancelAnimationFrame(fireRaf);
+  // 料理中に夜になった場合、スロットの食材をインベントリに戻す
+  G.cslots.forEach(t=>{if(t)G.inv[t]=(G.inv[t]||0)+1;});
+  G.cslots=[null,null,null];
   G.phase='night';
   G.nightStartTime=performance.now();
   document.getElementById('cook').style.display='none';
@@ -992,25 +1048,6 @@ window.addEventListener('load',()=>{
     loadSprites(()=>{
       document.getElementById('loading').style.display='none';
       document.getElementById('title').classList.remove('hidden');
-      // Draw title canvas
-      const tc=document.getElementById('title-cv'),tctx=tc.getContext('2d');
-      tctx.imageSmoothingEnabled=false;
-      const grad=tctx.createLinearGradient(0,0,0,120);
-      grad.addColorStop(0,'#c8e0f8');grad.addColorStop(1,'#e8d0a0');
-      tctx.fillStyle=grad;tctx.fillRect(0,0,440,120);
-      tctx.fillStyle='#f8d040';tctx.beginPath();tctx.arc(390,18,12,0,Math.PI*2);tctx.fill();
-      tctx.fillStyle='rgba(248,208,64,0.25)';tctx.beginPath();tctx.arc(390,18,20,0,Math.PI*2);tctx.fill();
-      tctx.fillStyle='#7ab832';tctx.fillRect(0,82,440,38);
-      tctx.fillStyle='#6aa826';tctx.fillRect(0,82,440,5);
-      const himg=SP.house;
-      if(himg){const hdw=115,hdh=himg.naturalHeight*(hdw/himg.naturalWidth);tctx.drawImage(himg,310,82-hdh+12,hdw,hdh);}
-      const rimg=SP.rack;
-      if(rimg){const rdw=60,rdh=rimg.naturalHeight*(rdw/rimg.naturalWidth);tctx.drawImage(rimg,6,82-rdh+5,rdw,rdh);}
-      [['p_front',88],['p_happy',156],['p_spear',222],['p_dance',295]].forEach(([key,cx])=>{
-        const img=SP[key];if(!img)return;
-        const dh=84,dw=img.naturalWidth*(dh/img.naturalHeight);
-        tctx.drawImage(img,cx-dw/2,82-dh,dw,dh);
-      });
     });
   });
 })();
@@ -1313,7 +1350,7 @@ var SFX = (function(){
 <!-- Pause overlay -->
 <div id="pause-ov" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:350;flex-direction:column;align-items:center;justify-content:center;gap:12px;">
   <div style="font-family:'DotGothic16',monospace;color:#e8a020;font-size:18px;letter-spacing:6px;">⏸ PAUSE</div>
-  <div style="font-family:'DotGothic16',monospace;color:#806040;font-size:10px;letter-spacing:2px;">ESCキーで再開</div>
+  <div style="font-family:'DotGothic16',monospace;color:#806040;font-size:10px;letter-spacing:2px;">ESC / ⏸ボタンで再開</div>
 </div>
 <!-- Field eat overlay -->
 <div id="feat-ov">
