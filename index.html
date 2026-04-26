@@ -78,7 +78,7 @@ body{background:#2a1a08;display:flex;flex-direction:column;align-items:center;ju
 <div id="title" class="hidden">
   <h1>🏺 縄文サバイバル</h1>
   <p class="sub">― JOMON SURVIVAL ―</p>
-  <img id="title-cv" src="title.png" style="max-width:100%;height:auto;border:2px solid #7a5520;display:block;margin:0 auto 14px;">
+  <img id="title-cv" src="title.jpg" style="max-width:100%;height:auto;border:2px solid #7a5520;display:block;margin:0 auto 14px;">
   <p class="hint">矢印キー/WASD：移動　Z：槍を振る<br>家の前でEnter：料理　どこでもEnter：生で食べる（HP減）<br>1分=1日　夜は眠る　食料は日に日に減る…</p>
   <button class="btn" onclick="startGame()">▶ はじめる</button>
 </div>
@@ -94,15 +94,15 @@ body{background:#2a1a08;display:flex;flex-direction:column;align-items:center;ju
   <div id="msg">🌿 食材を集めて家に帰ろう！Zキーで斧を振れる。</div>
   <div id="inv-bar"><div id="inv-ttl">🎒 インベントリ</div><div id="inv-slots"></div></div>
   <div id="ctrl">↑↓←→/WASD：移動　Z：槍を振る　Enter：食べる（家の前では料理）</div>
-  <div id="dpad">
-    <div style="display:flex;justify-content:center;align-items:center;">
+  <div id="dpad" style="position:relative;">
+    <div style="display:flex;justify-content:center;align-items:center;gap:32px;">
       <canvas id="joystick-canvas" width="130" height="130"></canvas>
       <div class="dp-right-btns">
         <div class="dp-act" id="dp-axe">🗡 槍</div>
-        <div class="dp-act" id="dp-enter">食</div>
-        <div class="dp-act" id="dp-pause" style="font-size:14px;">⏸</div>
+        <div class="dp-act" id="dp-enter">🍖 食</div>
       </div>
     </div>
+    <div id="dp-pause" style="position:absolute;top:4px;right:6px;width:36px;height:28px;background:#1a0e04;border:1px solid #4a2e10;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;color:#806040;cursor:pointer;-webkit-tap-highlight-color:transparent;">⏸</div>
   </div>
 </div>
 <div id="cook">
