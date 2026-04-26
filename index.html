@@ -180,10 +180,7 @@ function ds(ctx,key,dx,dy,dw,dh){
 }
 
 // ── Game state ────────────────────────────────────────────────
-// ── Supabase設定 (デプロイ後にここを書き換える) ──
-const SUPABASE_URL='https://xxxxxxxxxxxxxxxx.supabase.co'; // ← あなたのURL
-const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxxxxx'; // ← あなたのanon key
-const ONLINE=!SUPABASE_URL.includes('xxxxxxxx');
+const SCRIPT_URL='https://script.google.com/macros/s/AKfycbx2ra-ymounSr5EuegVpHeUPKcv7oC7RZDt8EcZXMqznwioBv4R7s-DAGTif4iGmZdm/exec';
 const G={hp:100,hunger:100,day:1,dayStartTime:0,nightStartTime:0,gameStartTime:0,phase:'field',inv:{},cslots:[null,null,null],nearHome:false,dead:false,axe:0,paused:false};
 const ADEF={
   deer:      {hp:1,spd:2.8,roam:0.7,flee:true, dmg:4, range:5,drops:['meat'],label:'鹿',e:'🦌'},
@@ -830,16 +827,11 @@ async function submitScore(){
   const name=(document.getElementById('death-name').value.trim()||'名無し').slice(0,10);
   const t=getSurvivedTime();
   document.getElementById('death-name-row').style.display='none';
-  // オンライン送信
-  if(ONLINE){
-    try{
-      await fetch(SUPABASE_URL+'/rest/v1/scores',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY,'Prefer':'return=minimal'},
-        body:JSON.stringify({name,days:t.days,hours:t.hours,minutes:t.minutes})
-      });
-    }catch(err){console.warn('online post failed',err);}
-  }
+  // オンライン送信 (Google Apps Script)
+  try{
+    const params=new URLSearchParams({action:'post',name,days:t.days,hours:t.hours,minutes:t.minutes});
+    await fetch(SCRIPT_URL+'?'+params);
+  }catch(err){console.warn('online post failed',err);}
   // ローカルにも保存（オフライン閲覧用）
   let r=[];try{r=JSON.parse(localStorage.getItem('jomonRanking')||'[]');}catch(e){}
   r.push({name,days:t.days,hours:t.hours,minutes:t.minutes,date:new Date().toLocaleDateString('ja-JP')});
@@ -858,16 +850,10 @@ async function showRanking(){
   const el=document.getElementById('ranking-list');
   el.innerHTML='<div style="color:#4a3a2a;font-size:9px;letter-spacing:1px;">読み込み中…</div>';
   let r=[];
-  if(ONLINE){
-    try{
-      const res=await fetch(SUPABASE_URL+'/rest/v1/scores?select=name,days,hours,minutes,created_at&order=days.desc,hours.desc,minutes.desc&limit=30',
-        {headers:{'apikey':SUPABASE_KEY,'Authorization':'Bearer '+SUPABASE_KEY}});
-      if(res.ok){
-        const data=await res.json();
-        r=data.map(e=>({name:e.name,days:e.days,hours:e.hours||0,minutes:e.minutes||0,date:new Date(e.created_at).toLocaleDateString('ja-JP')}));
-      }
-    }catch(err){console.warn('online fetch failed',err);}
-  }
+  try{
+    const res=await fetch(SCRIPT_URL);
+    if(res.ok)r=await res.json();
+  }catch(err){console.warn('online fetch failed',err);}
   if(!r.length){
     try{r=JSON.parse(localStorage.getItem('jomonRanking')||'[]');}catch(e){}
   }
