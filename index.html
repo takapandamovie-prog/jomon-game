@@ -606,6 +606,11 @@ function togglePause(){
 }
 document.addEventListener('keyup',e=>{keys[e.key]=false;});
 
+// タブ切り替え・最小化で自動ポーズ
+document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&!G.paused&&!G.dead&&G.phase==='field')togglePause();
+});
+
 // ── ジョイスティック ──────────────────────────────────────────────────────
 const JS={dx:0,dy:0,active:false};
 (function(){
@@ -737,7 +742,7 @@ function drop(tx,ty,ts){
 
 let fireRaf;
 function enterHome(){
-  cancelAnimationFrame(raf);G.phase='cook';
+  cancelAnimationFrame(raf);G.phase='cook';G._cookAt=performance.now();
   document.getElementById('game-screen').classList.add('hidden');
   document.getElementById('cook').style.display='block';
   // 万が一スロットに残っていたら返却してからリセット
@@ -750,6 +755,9 @@ function goField(){
   // Return any items left in cooking slots back to inventory
   G.cslots.forEach(t=>{if(t){G.inv[t]=(G.inv[t]||0)+1;}});
   G.cslots=[null,null,null];
+  // 料理中に経過した時間分だけ dayStartTime をずらす（時間が進まないように）
+  if(G._cookAt&&G.dayStartTime)G.dayStartTime+=performance.now()-G._cookAt;
+  G._cookAt=0;
   document.getElementById('cook').style.display='none';
   document.getElementById('game-screen').classList.remove('hidden');
   G.phase='field';G.nearHome=true;gameLoop();
@@ -830,8 +838,13 @@ function openFieldEat(){
     list.appendChild(btn);
   });
   document.getElementById('feat-ov').style.display='flex';
+  G._featAt=performance.now();
 }
-function closeFeatOv(){document.getElementById('feat-ov').style.display='none';}
+function closeFeatOv(){
+  document.getElementById('feat-ov').style.display='none';
+  if(G._featAt&&G.dayStartTime)G.dayStartTime+=performance.now()-G._featAt;
+  G._featAt=0;
+}
 function doFieldEat(type){
   closeFeatOv();
   const def=ID[type];if(!def||!G.inv[type])return;
@@ -1012,7 +1025,7 @@ function startGame(){
   setMsg('🌿 食材を集めて家に帰ろう！Zで槍を振れる。1分で夜になる。');
   // Day timer — fires even during cooking
   setInterval(()=>{
-    if(G.dead||!G.dayStartTime||G.phase==='night'||G.paused)return;
+    if(G.dead||!G.dayStartTime||G.phase==='night'||G.phase==='cook'||G.paused)return;
     const elapsed=performance.now()-G.dayStartTime;
     const pct=Math.min(100,elapsed/600);
     const bar=document.getElementById('bdaytime');
