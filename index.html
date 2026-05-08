@@ -682,7 +682,8 @@ function drawItems(){
 
 function plrKey(){
   if(G.axe>0)return'p_spear';
-  const mv=keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||keys.w||keys.a||keys.s||keys.d||keys.W||keys.A||keys.S||keys.D;
+  const mv=keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||keys.w||keys.a||keys.s||keys.d||keys.W||keys.A||keys.S||keys.D||
+            (JS.active&&(Math.abs(JS.dx)>0.15||Math.abs(JS.dy)>0.15));
   if(!mv){return'p_front';}
   const f=PL.facing;
   if(f==='right')return'p_right';
@@ -693,7 +694,8 @@ function plrKey(){
 function drawPlayer(){
   const sx=PL.x-camX, sy=PL.y-camY;
   const mv=keys.ArrowUp||keys.ArrowDown||keys.ArrowLeft||keys.ArrowRight||
-            keys.w||keys.s||keys.a||keys.d||keys.W||keys.A||keys.S||keys.D;
+            keys.w||keys.s||keys.a||keys.d||keys.W||keys.A||keys.S||keys.D||
+            (JS.active&&(Math.abs(JS.dx)>0.15||Math.abs(JS.dy)>0.15));
 
   // 影
   gctx.fillStyle='rgba(0,0,0,.2)';
